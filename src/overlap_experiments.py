@@ -74,7 +74,19 @@ def load_overlap_data() -> DF:
 
 def main():
     args = get_arguments()
-    out_dir = Path(args.output_dir) / "overlap_results"
+    if sys.gettrace() is not None:  # Debug
+        model_name = "Qwen/Qwen3-Embedding-8B"
+        model = build_embedder(model_name=model_name)
+        print("Debug mode: Using Qwen3-Embedding-8B model for faster testing.")
+    else: 
+        model_name = args.model
+        model = build_embedder(
+            model_name=model_name,
+            device=args.gpu
+        )
+    model_id = _derive_model_label(model_name, None)
+    
+    out_dir = Path(args.output_dir) / f"overlap_results/{model_id}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
     if sys.gettrace() is not None:  # Debug
@@ -99,17 +111,7 @@ def main():
     model_results = [
         data_df,
     ]
-    if sys.gettrace() is not None:  # Debug
-        model_name = "Qwen/Qwen3-Embedding-8B"
-        model = build_embedder(model_name=model_name)
-        print("Debug mode: Using Qwen3-Embedding-8B model for faster testing.")
-    else: 
-        model_name = args.model
-        model = build_embedder(
-            model_name=model_name,
-            device=args.gpu
-        )
-    model_id = _derive_model_label(model_name, None)
+
     print(f"\nModel: {model_id}")
     model_time = time.process_time()
     # Iterate over batch of data and generate results

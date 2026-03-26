@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional
 
 
 def delete_file(file_pt: Path) -> None:
@@ -22,3 +22,11 @@ def mkdir_p(inp_dir_or_path: Union[str, Path]) -> Path:
     else:  # dir
         inp_dir_or_path.mkdir(parents=True, exist_ok=True)
     return inp_dir_or_path
+
+
+def derive_model_label(model_name: Optional[str], custom_class_path: Optional[str]) -> str:
+    if model_name:
+        return model_name.split("/")[-1]
+    if custom_class_path:
+        return custom_class_path.split(".")[-1]
+    return "custom_embedder"

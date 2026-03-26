@@ -15,10 +15,10 @@ import pandas as pd
 import torch
 
 
-from utils import get_arguments, DF, METRICS_MAPPING, mkdir_p, compute_angles
+from utils import get_arguments, DF, METRICS_MAPPING, mkdir_p, compute_angles, derive_model_label
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 try:
-    from Models.llm_embeddings import build_embedder, _derive_model_label
+    from Models.llm_embeddings import build_embedder
     print("Successfully imported build_embedder.")
 except ImportError as e:
     print(f"Import error: {e}")
@@ -67,7 +67,7 @@ def main():
             model_name=model_name,
             device=args.gpu
         )
-    model_id = _derive_model_label(model_name, None)
+    model_id = derive_model_label(model_name, None)
 
     def analyze(
         diff_df: DF, data_key: str, n_chunks: int, write_mode: str = "w"
@@ -113,25 +113,25 @@ def main():
                         metric_cls(*metric_inputs)
                     )
 
-            # Generate the projection results
-            angle_results.append(
-                compute_angles(
-                    chunk_embeds["D"], chunk_embeds["A"], chunk_embeds["B"]
-                )
-            )
+            # # Generate the projection results
+            # angle_results.append(
+            #     compute_angles(
+            #         chunk_embeds["D"], chunk_embeds["A"], chunk_embeds["B"]
+            #     )
+            # )
 
-            print(
-                f"Model: {model_id}, Data Key: {data_key}, Batch_Idx: {b_idx}/{n_chunks -1} Time: {time.process_time() - batch_time}"
-            )
+            # print(
+            #     f"Model: {model_id}, Data Key: {data_key}, Batch_Idx: {b_idx}/{n_chunks -1} Time: {time.process_time() - batch_time}"
+            # )
 
         # H1 Results per model
-        out = {}
-        for key, val in results.items():
-            out[key] = np.concatenate(val).squeeze()
-        model_results.append(pd.DataFrame.from_dict(out))
-        print(
-            f"Model: {model_id}, Time Taken: {time.process_time() - model_time:.2f} s"
-        )
+        # out = {}
+        # for key, val in results.items():
+        #     out[key] = np.concatenate(val).squeeze()
+        # model_results.append(pd.DataFrame.from_dict(out))
+        # print(
+        #     f"Model: {model_id}, Time Taken: {time.process_time() - model_time:.2f} s"
+        # )
 
         # H2/Angle Results per model
         # angle_results = pd.DataFrame(
@@ -166,7 +166,7 @@ def main():
         out = pd.concat(model_results, axis=1)
 
         with pd.ExcelWriter(
-            mkdir_p(out_dir.joinpath(f"C2_and_C3_results.xlsx")),
+            mkdir_p(out_dir.joinpath(f"{model_id}/C2_and_C3_results.xlsx")),
             mode=write_mode,
         ) as writer:
             out.to_excel(

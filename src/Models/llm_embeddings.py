@@ -30,13 +30,6 @@ TextInput = Union[str, Sequence[str]]
 dotenv.load_dotenv(os.getenv("./models/.env"))
 _hf_token = os.getenv("huggingface_token")
 
-def _derive_model_label(model_name: Optional[str], custom_class_path: Optional[str]) -> str:
-    if model_name:
-        return model_name.split("/")[-1]
-    if custom_class_path:
-        return custom_class_path.split(".")[-1]
-    return "custom_embedder"
-
 
 class BaseEmbedder(ABC):
     """Contract shared by all embedding providers."""
