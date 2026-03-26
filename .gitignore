@@ -1,0 +1,5 @@
+src/Models/.env
+data.zip
+data/
+__pycache__/
+*.pyc
