@@ -22,7 +22,7 @@ def main():
     col_bd = f'{model_id}_{metric}_B_D'
     col_ad = f'{model_id}_{metric}_A_D'
     col_ab = f'{model_id}_{metric}_A_B'
-    print(df.columns)
+    # print(df.columns)
     if col_bd in df.columns and col_ad in df.columns and col_ab in df.columns:
         bd_mean = df[col_bd].mean()
         diff1_mean = (df[col_ad] - df[col_bd]).mean()
