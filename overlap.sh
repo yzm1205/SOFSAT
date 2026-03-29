@@ -21,8 +21,8 @@ LOG_FILE="${LOG_DIR}/${model_name}.log"
 
     python -u src/overlap_experiments_copy.py --model "$model_id" --batch_size 1 2>&1 
 
-    # Run the table generation script for Table 14
-    python -u src/analysis/overlap/table_14_h2_h3.py --model "$model_id" 2>&1
+    # Run the table generation script for Table 13
+    python -u src/analysis/overlap/C1_table_13.py --model "$model_id" 2>&1
 
     # 3. Capture end times
     END_DISPLAY=$(date '+%Y-%m-%d %H:%M:%S')

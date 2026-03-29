@@ -20,7 +20,8 @@ LOG_FILE="${LOG_DIR}/${model_name}.log"
 
     python -u src/difference_experiments.py --model "$model_id" --batch_size 2 2>&1 
 
-    python -u src/analysis/difference/calculate_h2_h3_differences.py --model "$model_id" 2>&1
+    # Run this for Table 15 in the paper
+    python -u src/analysis/difference/C3_table_15.py --model "$model_id" 2>&1
 
 
     # 3. Capture end times
