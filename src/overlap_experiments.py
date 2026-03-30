@@ -117,33 +117,69 @@ def main():
     # Iterate over batch of data and generate results
     results = defaultdict(list)
     angle_results = []
-    for b_idx, chunk in enumerate(np.array_split(data_df, n_chunks)):
-        batch_time = time.process_time()
-        # Encode S0, S1 and S2 for data chunk
+    
+    # for b_idx, chunk in enumerate(np.array_split(data_df, n_chunks)):
+    #     batch_time = time.process_time()
+    #     # Encode S0, S1 and S2 for data chunk
+    #     chunk_embeds = {
+    #         key: model.encode(chunk[key].to_list(), batch_size=args.batch_size)
+    #         for key in OVERLAP_SENTENCES_COLUMNS
+    #     }
+
+    #     # Compute all metric results for all the pairs/combinations of 2
+    #     for metric_id, metric_cls in metrics_map.items():
+    #         for pair_embeds in itertools.combinations(chunk_embeds.keys(), 2):
+    #             pair_id = "_".join(pair_embeds)
+    #             metric_inputs = [chunk_embeds[p_embed] for p_embed in pair_embeds]
+    #             results[f"{model_id}_{metric_id}_{pair_id}"].append(
+    #                 metric_cls(*metric_inputs)
+    #             )
+
+    #     # Generate the projection results
+    #     angle_results.append(
+    #         compute_angles(
+    #             chunk_embeds["S0"], chunk_embeds["S1"], chunk_embeds["S2"]
+    #         )
+    #     )
+    chunk_size = getattr(args, "chunk_size", 8)
+    encode_batch_size = args.batch_size
+
+    for start in tqdm(range(0, len(data_df), chunk_size)):
+        chunk = data_df.iloc[start:start + chunk_size]
+        n = len(chunk)
+
+        s0 = chunk["S0"].tolist()
+        s1 = chunk["S1"].tolist()
+        s2 = chunk["S2"].tolist()
+
+        all_texts = s0 + s1 + s2
+
+        with torch.inference_mode():
+            all_embeds = model.encode(all_texts, batch_size=encode_batch_size)
+
+        s0_emb = all_embeds[:n]
+        s1_emb = all_embeds[n:2*n]
+        s2_emb = all_embeds[2*n:3*n]
+
         chunk_embeds = {
-            key: model.encode(chunk[key].to_list(), batch_size=args.batch_size)
-            for key in OVERLAP_SENTENCES_COLUMNS
+            "S0": s0_emb,
+            "S1": s1_emb,
+            "S2": s2_emb,
         }
 
-        # Compute all metric results for all the pairs/combinations of 2
         for metric_id, metric_cls in metrics_map.items():
-            for pair_embeds in itertools.combinations(chunk_embeds.keys(), 2):
-                pair_id = "_".join(pair_embeds)
-                metric_inputs = [chunk_embeds[p_embed] for p_embed in pair_embeds]
-                results[f"{model_id}_{metric_id}_{pair_id}"].append(
-                    metric_cls(*metric_inputs)
-                )
+            results[f"{model_id}_{metric_id}_S0_S1"].append(metric_cls(s0_emb, s1_emb))
+            results[f"{model_id}_{metric_id}_S0_S2"].append(metric_cls(s0_emb, s2_emb))
+            results[f"{model_id}_{metric_id}_S1_S2"].append(metric_cls(s1_emb, s2_emb))
 
-        # Generate the projection results
-        angle_results.append(
-            compute_angles(
-                chunk_embeds["S0"], chunk_embeds["S1"], chunk_embeds["S2"]
-            )
-        )
+        angle_results.append(compute_angles(s0_emb, s1_emb, s2_emb))
 
-    print(
-        f"Model: {model_id} Time: {time.process_time() - batch_time}"
-    )
+    if torch.cuda.is_available():
+        torch.cuda.synchronize()
+
+    # print(
+    #     f"Model: {model_id} Time: {time.process_time() - batch_time}"
+    # )
 
     # H1 Results per model
     out = {}
