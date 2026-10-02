@@ -20,44 +20,12 @@ except ImportError as e:
     print(f"Import error: {e}")
     sys.exit(1)
 
-
 OVERLAP_SENTENCES_COLUMNS = ["S0", "S1", "S2"]
-INTERSECTION_COLS = ["S0", "S1", "S2"]
-FLAG_COL = "duplicate"
-
-
-# TODO: Yash, you can probably put this part in utils so that it can be reused since there'll be duplicates
-def read_final_combined_data():
-    pt = Path("./data/final_combined_data.xlsx")
-    return pd.read_excel(pt)
-
-
-def filter_duplicates(df: DF) -> DF:
-    final_combined_data = read_final_combined_data()
-
-    # Keep the one where either of the consecutive sentences pairs from (prev, curr, next) are not same.
-    final_combined_data = final_combined_data[final_combined_data[FLAG_COL] == 0]
-    final_combined_data = final_combined_data[INTERSECTION_COLS]
-
-    # Now, filter the results dataframe accordingly
-    out = df.merge(
-        final_combined_data, on=INTERSECTION_COLS, how="inner", indicator=True
-    )
-    out = out.drop_duplicates(subset=INTERSECTION_COLS)
-    out = out[out["_merge"] == "both"]
-    out = out.drop("_merge", axis=1)
-
-    if sys.gettrace() is None:  # Normal mode
-        assert len(out) == len(final_combined_data)
-
-    print(f"Length of original DF: {len(df)}, Length of filtered DF: {len(out)} ")
-    return out
-
 
 def load_overlap_data() -> DF:
     """Load the data corresponding to overlap. Paths are hardcoded"""
     data_pt = Path(
-        "./data/intersection_analysis.xlsx"
+        ".data/overlap_data.xlsx"
     )
 
     # Read small number of rows in debug mode
@@ -96,9 +64,6 @@ def main():
 
     # Data
     data_df = load_overlap_data()
-    data_df = filter_duplicates(data_df)
-    # if sys.gettrace() is not None:  # Debug
-    #     data_df = data_df.head(10)
         
     # n_chunks = len(data_df) // args.batch_size
     # n_chunks = 1 if not n_chunks else n_chunks
