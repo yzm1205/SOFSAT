@@ -5,3 +5,6 @@ __pycache__/
 *.pyc
 logs
 Results
+src/count_size.ipynb
+src/union_experiments_copy.py
+data_v1
