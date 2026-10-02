@@ -1,4 +1,4 @@
-# SOFSAT: Beyond Downstream Tasks — A Set-Theoretic Evaluation of Sentence Embeddings
+# Beyond Downstream Tasks — A Set-Theoretic Evaluation of Sentence Embeddings
 
 <p align="center">
   <img src="asset/image.png" alt="Figure 1: Expected projections of TextOverlap, TextDifference, and TextUnion embeddings" width="800">
