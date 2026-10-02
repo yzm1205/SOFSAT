@@ -1,0 +1,15 @@
+numpy
+pandas
+openpyxl
+torch
+transformers
+tqdm
+python-dotenv
+huggingface_hub
+
+# Optional: only needed if you add classical (non-LLM) encoders
+# (e.g. SBERT, USE, LASER, GPT-3-ada) referenced in the paper but
+# not wired up in this codebase by default.
+# sentence-transformers
+# tensorflow-hub
+# openai
