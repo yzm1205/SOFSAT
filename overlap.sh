@@ -4,7 +4,7 @@ LOG_DIR=./logs
 mkdir -p ${LOG_DIR}
 export CUDA_VISIBLE_DEVICES=1
 
-model_id="meta-llama/Llama-3.2-3B"
+model_id="${1:-meta-llama/Llama-3.2-3B}"
 
 # sanitize model name for filename (replace / with _)
 model_name=$(echo "$model_id" | tr '/' '_')

@@ -3,3 +3,5 @@ data.zip
 data/
 __pycache__/
 *.pyc
+logs
+Results
