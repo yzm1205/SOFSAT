@@ -17,7 +17,7 @@ The paper introduces a set-theoretic framework for evaluating the *compositional
 
 The ≈192K-sample synthetic benchmark (TextOverlap, TextDifference, TextUnion) is hosted on Hugging Face:
 
-🔗 **https://huggingface.co/datasets/BridgeAI-Lab/STAB**
+🔗 **https://huggingface.co/datasets/BridgeAI-Lab/Set-Like-Compositionality**
 
 ### Download the dataset
 
@@ -28,7 +28,7 @@ pip install -U huggingface_hub
 
 mkdir -p data
 
-huggingface-cli download BridgeAI-Lab/STAB \
+huggingface-cli download BridgeAI-Lab/Set-Like-Compositionality \
     --repo-type dataset \
     --local-dir data
 ```
@@ -39,7 +39,7 @@ Alternatively, using the `huggingface_hub` Python API:
 from huggingface_hub import snapshot_download
 
 snapshot_download(
-    repo_id="BridgeAI-Lab/STAB",
+    repo_id="BridgeAI-Lab/Set-Like-Compositionality",
     repo_type="dataset",
     local_dir="data",
 )
@@ -49,17 +49,16 @@ After downloading, `data/` should contain the following files, which the experim
 
 ```
 data/
-├── final_combined_data.xlsx         # base Sprev/Scurr/Snext/S1/S2 samples
-├── intersection_analysis.xlsx       # TextOverlap samples
-├── difference_analysis.xlsx         # TextDifference samples
-└── LocationExp/
-    └── use.xlsx                     # TextUnion samples
+├── data.xlsx         # base Sprev/Scurr/Snext/S1/S2 samples
+├── intersection_data.xlsx       # TextOverlap samples
+├── difference_data.xlsx         # TextDifference samples
+└── union_data.xlsx              # TextUnion samples
 ```
 
 ## 2. Setup
 
 ```bash
-git clone <this-repo-url>
+git clone git@github.com:BridgeAI-Lab/Set-Like-Compositionality.git
 cd Sofsat
 pip install -r requirements.txt
 ```
